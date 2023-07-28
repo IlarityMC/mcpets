@@ -82,7 +82,7 @@ public class PetInteractionMenuListener implements Listener {
                 return;
             }
 
-            if (e.getSlot() == 4) {
+            if (e.getSlot() == 13) {
                 Pet pet = Pet.getFromLastInteractedWith(p);
                 if (pet == null || !pet.isStillHere()) {
                     p.closeInventory();
