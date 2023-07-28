@@ -29,14 +29,17 @@ public class PetInteractionMenu {
             return;
         }
         pet.setOwner(owner);
-        inventory = Bukkit.createInventory(null, 9, title);
+        inventory = Bukkit.createInventory(null, 27, title);
 
         if (GlobalConfig.getInstance().isActivateBackMenuIcon())
             inventory.setItem(0, Items.PETMENU.getItem());
         if (pet.hasSkins())
             inventory.setItem(2, Items.SKINS.getItem());
         if (GlobalConfig.getInstance().isNameable())
-            inventory.setItem(3, Items.RENAME.getItem());
+        {
+            inventory.setItem(10, Items.RENAME.getItem());
+            inventory.setItem(11, Items.RENAME.getItem());
+        }
         if (GlobalConfig.getInstance().isMountable() && pet.isMountable())
         {
             inventory.setItem(5, Items.MOUNT.getItem());
@@ -44,8 +47,12 @@ public class PetInteractionMenu {
         if (!pet.getSignals().isEmpty() && pet.isEnableSignalStickFromMenu())
             inventory.setItem(6, pet.getSignalStick());
         if (pet.getInventorySize() > 0)
-            inventory.setItem(7, Items.INVENTORY.getItem());
-        inventory.setItem(4, pet.buildItem(Items.petInfo(pet), true, null, null, null, null, 0, null));
+        {
+            inventory.setItem(15, Items.INVENTORY.getItem());
+            inventory.setItem(16, Items.INVENTORY.getItem());
+        }
+
+        inventory.setItem(13, pet.buildItem(Items.petInfo(pet), true, null, null, null, null, 0, null));
     }
 
     public void open(Player p) {
