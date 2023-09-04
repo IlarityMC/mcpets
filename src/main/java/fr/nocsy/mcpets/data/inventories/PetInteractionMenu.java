@@ -10,6 +10,8 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.UUID;
 
@@ -53,6 +55,8 @@ public class PetInteractionMenu {
         }
 
         inventory.setItem(13, pet.buildItem(Items.petInfo(pet), true, null, null, null, null, 0, null));
+
+        inventory.setItem(8, Items.DESPAWN.getItem());
     }
 
     public void open(Player p) {

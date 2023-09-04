@@ -14,6 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+@Getter
 public enum Items {
 
     UNKNOWN("unkown"),
@@ -25,14 +26,10 @@ public enum Items {
     SKINS("skins"),
     EQUIPMENT("equipment"),
     PAGE_SELECTOR("page_selector"),
+    DESPAWN("despawn");
 
-    ;
-
-    @Getter
     private ItemStack item;
-
-    @Getter
-    private String name;
+    private final String name;
 
     Items(String name) {
         this.name = name;
@@ -116,13 +113,14 @@ public enum Items {
     }
 
     private static ItemStack rename() {
-        ItemStack it = new ItemStack(Material.NAME_TAG);
+        ItemStack it = new ItemStack(Material.PAPER);
         ItemMeta meta = it.getItemMeta();
         meta.setDisplayName(Language.RENAME_ITEM_NAME.getMessage());
 
         ArrayList<String> lore = new ArrayList<>(Arrays.asList(Language.RENAME_ITEM_DESCRIPTION.getMessage().split("\n")));
         meta.setLore(lore);
 
+        meta.setCustomModelData(1);
         it.setItemMeta(meta);
         return it;
     }
@@ -136,6 +134,7 @@ public enum Items {
         meta.setLore(lore);
         meta.setLocalizedName("AlmPet;BackToPetMenu");
 
+        meta.setCustomModelData(1);
         it.setItemMeta(meta);
 
         return it;
@@ -144,11 +143,13 @@ public enum Items {
     private static ItemStack inventory() {
         ArrayList<String> lore = new ArrayList<>(Arrays.asList(Language.INVENTORY_ITEM_DESCRIPTION.getMessage().split("\n")));
 
-        ItemStack it = new ItemStack(Material.CHEST);
+        ItemStack it = new ItemStack(Material.PAPER);
         ItemMeta meta = it.getItemMeta();
         meta.setDisplayName(Language.INVENTORY_ITEM_NAME.getMessage());
+        meta.setLore(lore);
         meta.setLocalizedName("AlmPet;Inventory");
 
+        meta.setCustomModelData(1);
         it.setItemMeta(meta);
 
         return it;

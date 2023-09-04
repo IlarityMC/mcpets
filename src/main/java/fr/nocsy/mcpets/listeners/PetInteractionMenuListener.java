@@ -15,6 +15,7 @@ import fr.nocsy.mcpets.data.inventories.PetMenu;
 import fr.nocsy.mcpets.utils.Utils;
 import lombok.Getter;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -82,7 +83,8 @@ public class PetInteractionMenuListener implements Listener {
                 return;
             }
 
-            if (e.getSlot() == 13) {
+            if (e.getSlot() == 8) {
+                p.playSound(p, Sound.UI_BUTTON_CLICK, 1, 1);
                 Pet pet = Pet.getFromLastInteractedWith(p);
                 if (pet == null || !pet.isStillHere()) {
                     p.closeInventory();
@@ -103,7 +105,9 @@ public class PetInteractionMenuListener implements Listener {
 
                 if(localizedName.equals(Items.PETMENU.getLocalizedName()))
                 {
-                    openBackPetMenu(p);
+                    //openBackPetMenu(p);
+                    p.closeInventory();
+                    p.playSound(p, Sound.UI_BUTTON_CLICK, 1, 1);
                     return;
                 }
 
@@ -126,8 +130,10 @@ public class PetInteractionMenuListener implements Listener {
                 if (localizedName.equals(Items.MOUNT.getLocalizedName())) {
                     mount(p, pet);
                 } else if (localizedName.equals(Items.RENAME.getLocalizedName())) {
+                    p.playSound(p, Sound.UI_BUTTON_CLICK, 1, 1);
                     changeName(p);
                 } else if (localizedName.equals(Items.INVENTORY.getLocalizedName())) {
+                    p.playSound(p, Sound.UI_BUTTON_CLICK, 1, 1);
                     inventory(p, pet);
                 } else if (pet.getSignalStick() != null && it.isSimilar(pet.getSignalStick())) {
                     pet.giveStickSignals(p);
@@ -167,7 +173,7 @@ public class PetInteractionMenuListener implements Listener {
                 if (!p.hasPermission(PPermission.COLOR.getPermission()))
                     name = ChatColor.stripColor(name);
 
-                if(name == null || name.isEmpty())
+                if(name.isEmpty())
                 {
                     Language.NICKNAME_NOT_CHANGED.sendMessage(p);
                     return;
