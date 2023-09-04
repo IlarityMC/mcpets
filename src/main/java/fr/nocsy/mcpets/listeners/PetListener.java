@@ -9,12 +9,10 @@ import fr.nocsy.mcpets.data.Pet;
 import fr.nocsy.mcpets.data.PetDespawnReason;
 import fr.nocsy.mcpets.data.config.GlobalConfig;
 import fr.nocsy.mcpets.data.config.Language;
-import fr.nocsy.mcpets.data.flags.DespawnPetFlag;
 import fr.nocsy.mcpets.data.flags.DismountPetFlag;
 import fr.nocsy.mcpets.data.flags.FlagsManager;
 import fr.nocsy.mcpets.data.inventories.PetInteractionMenu;
 import fr.nocsy.mcpets.data.livingpets.PetFood;
-import fr.nocsy.mcpets.data.sql.Databases;
 import fr.nocsy.mcpets.data.sql.PlayerData;
 import fr.nocsy.mcpets.events.EntityMountPetEvent;
 import fr.nocsy.mcpets.events.PetOwnerInteractEvent;
@@ -36,7 +34,6 @@ import org.bukkit.event.entity.EntityTameEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.jetbrains.annotations.Debug;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -135,7 +132,7 @@ public class PetListener implements Listener {
             pet.despawn(PetDespawnReason.DISCONNECTION);
             reconnectionPets.put(p.getUniqueId(), pet.getId());
         }
-        
+
     }
 
 
@@ -155,6 +152,7 @@ public class PetListener implements Listener {
                 if(pet == null)
                     return;
                 pet = pet.copy();
+                pet.setCheckPermission(false);
                 pet.setOwner(p.getUniqueId());
                 pet.spawn(p.getLocation(), true);
                 reconnectionPets.remove(p.getUniqueId());
@@ -207,20 +205,15 @@ public class PetListener implements Listener {
 
     }
 
-    /**
-     * Wtf is this doing seriously ? Makes no sense.
-     *
-     * @param e
-     */
     @EventHandler
     public void damaged(EntityDamageEvent e) {
         if (e.getEntity() instanceof Player) {
             Pet pet = Pet.getFromEntity(e.getEntity());
-            if (pet != null && pet.isInvulnerable()) {
+            // Cosmetic pets shouldn't be damageable
+            if (pet != null && pet.getPetStats() == null) {
                 e.setDamage(0);
                 e.setCancelled(true);
             }
-            return;
         }
     }
 
@@ -232,6 +225,9 @@ public class PetListener implements Listener {
             pet.despawn(PetDespawnReason.GAMEMODE);
         }
     }
+
+
+    private HashMap<UUID, Integer> repeatRespawn = new HashMap<>();
 
     /**
      * Handle random despawn
@@ -247,7 +243,24 @@ public class PetListener implements Listener {
                     pet.despawn(PetDespawnReason.MYTHICMOBS);
                     Player owner = Bukkit.getPlayer(pet.getOwner());
                     if (owner != null) {
-                        Language.REVOKED_UNKNOWN.sendMessage(owner);
+                        if(repeatRespawn.containsKey(owner.getUniqueId()) && repeatRespawn.get(owner.getUniqueId()) == 3)
+                        {
+                            Language.REVOKED_UNKNOWN.sendMessage(owner);
+                            repeatRespawn.remove(owner.getUniqueId());
+                            return;
+                        }
+                        int value = 1;
+                        if(repeatRespawn.containsKey(owner.getUniqueId()))
+                            value = repeatRespawn.get(owner.getUniqueId());
+                        pet.spawn(owner, owner.getLocation());
+                        pet.setRecurrent_spawn(false);
+                        repeatRespawn.put(owner.getUniqueId(), value + 1);
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                repeatRespawn.remove(owner.getUniqueId());
+                            }
+                        }.runTaskLater(MCPets.getInstance(), 10L);
                     }
                 }
             }
@@ -356,7 +369,7 @@ public class PetListener implements Listener {
         Entity entity;
         try
         {
-            entity = e.getVehicle().getBase().getWorld().getEntity(e.getVehicle().getBase().getUniqueId());
+            entity = Bukkit.getEntity(e.getVehicle().getBase().getUniqueId());
         }
         catch (Exception ex)
         {
