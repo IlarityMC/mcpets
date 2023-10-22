@@ -226,7 +226,7 @@ public class PetConfig extends AbstractConfig {
             }.runTaskLater(MCPets.getInstance(), 5L);
         }
 
-        ItemStack icon = legacyItemRead(pet.getIcon(), true, pet.toString(), "§cIcon (not set)", "Icon");
+        ItemStack icon = legacyItemRead(pet.getIcon(), false, pet.toString(), "§cIcon (not set)", "Icon");
         pet.setIcon(icon);
 
         ItemStack signalStickItem = legacyItemRead(pet.getSignalStick(), false, Items.buildSignalStickTag(pet), "§cSignal stick (not set)", "Signals.Item");
@@ -266,6 +266,7 @@ public class PetConfig extends AbstractConfig {
             int data = getConfig().getInt(path + ".CustomModelData");
             String textureBase = getConfig().getString(path + ".TextureBase64");
             List<String> description = getConfig().getStringList(path + ".Description");
+            description.replaceAll(Utils::hex);
             itemStack = pet.buildItem(
                     item,
                     showStats,

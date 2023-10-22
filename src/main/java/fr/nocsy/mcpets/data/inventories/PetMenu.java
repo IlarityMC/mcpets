@@ -10,6 +10,8 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 import java.util.UUID;
@@ -62,7 +64,17 @@ public class PetMenu {
                 break;
             }
 
-            inventory.addItem(pet.buildItem(pet.getIcon(), true, null, null, null, null, 0, null));
+            ItemStack item = pet.buildItem(pet.getIcon(), false, null, null, null, null, 0, null);
+            ItemMeta meta = item.getItemMeta();
+            List<String> lore = meta.getLore();
+            lore.replaceAll(line -> {
+                return line.replace("%damagemodifier%", "+" + (int) (100 * (pet.getPetStats().getCurrentLevel().getDamageModifier() - 1)))
+                        .replace("%level%", pet.getPetStats().getCurrentLevel().getLevelName());
+            });
+            meta.setLore(lore);
+            item.setItemMeta(meta);
+
+            inventory.addItem(item);
 
         }
 

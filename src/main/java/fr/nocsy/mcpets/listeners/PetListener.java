@@ -80,12 +80,15 @@ public class PetListener implements Listener {
             pet.setLastInteractedWith(p);
             menu.open(p);
         }
+        /*
         if(pet != null && p.isOp())
         {
             PetInteractionMenu menu = new PetInteractionMenu(pet, p.getUniqueId());
             pet.setLastOpInteracted(p);
             menu.open(p);
         }
+
+         */
     }
 
     @EventHandler
@@ -113,6 +116,7 @@ public class PetListener implements Listener {
             e.setCancelled(true);
             e.setDamage(0);
         }
+        /*
         if(pet != null && p.isOp())
         {
             PetInteractionMenu menu = new PetInteractionMenu(pet, p.getUniqueId());
@@ -121,6 +125,8 @@ public class PetListener implements Listener {
             e.setCancelled(true);
             e.setDamage(0);
         }
+
+         */
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

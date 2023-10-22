@@ -10,6 +10,7 @@ import fr.nocsy.mcpets.data.sql.PlayerDataNoDatabase;
 import fr.nocsy.mcpets.utils.BukkitSerialization;
 import fr.nocsy.mcpets.utils.Utils;
 import lombok.Getter;
+import org.apache.commons.codec.language.bm.Lang;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -46,7 +47,8 @@ public class PetInventory {
         this.pet = pet;
         this.pet.setOwner(owner);
 
-        String title = Language.PET_INVENTORY_TITLE.getMessageFormatted(new FormatArg("%pet%", pet.getIcon().getItemMeta().getDisplayName()));
+        Language lang = Language.valueOf("PET_INVENTORY_TITLE_" + (pet.getInventorySize() / 9));
+        String title = lang.getMessageFormatted(new FormatArg("%pet%", pet.getIcon().getItemMeta().getDisplayName()));
 
         this.inventory = Bukkit.createInventory(null, pet.getInventorySize(), title);
         if(premadeInventory != null)

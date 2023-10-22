@@ -12,8 +12,10 @@ import fr.nocsy.mcpets.data.config.Language;
 import fr.nocsy.mcpets.data.inventories.PetInteractionMenu;
 import fr.nocsy.mcpets.data.inventories.PetInventory;
 import fr.nocsy.mcpets.data.inventories.PetMenu;
+import fr.nocsy.mcpets.data.livingpets.PetLevel;
 import fr.nocsy.mcpets.utils.Utils;
 import lombok.Getter;
+import net.ilarity.minecore.storage.user.User;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -78,10 +80,13 @@ public class PetInteractionMenuListener implements Listener {
 
             Player p = (Player) e.getWhoClicked();
 
+            /*
             if (e.getClickedInventory() == null && GlobalConfig.getInstance().isActivateBackMenuIcon()) {
                 openBackPetMenu(p);
                 return;
             }
+
+             */
 
             if (e.getSlot() == 8) {
                 p.playSound(p, Sound.UI_BUTTON_CLICK, 1, 1);
@@ -127,11 +132,31 @@ public class PetInteractionMenuListener implements Listener {
                     return;
                 }
 
-                if (localizedName.equals(Items.MOUNT.getLocalizedName())) {
+                if (localizedName.equals(Items.UPGRADE.getLocalizedName())) {
+                    User user = User.get(p);
+                    PetLevel currentLevel = pet.getPetStats().getCurrentLevel();
+                    PetLevel nextLevel = pet.getPetStats().getNextLevel();
+
+                    if (!currentLevel.equals(nextLevel)) {
+                        if (user.hasMoney((int) nextLevel.getExpThreshold())) {
+                            user.takeMoney((int) nextLevel.getExpThreshold());
+
+                            pet.getPetStats().addExperience(nextLevel.getExpThreshold());
+                            p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+                            p.closeInventory();
+                        } else {
+                            Language.NOT_ENOUGH_MONEY.sendMessage(p);
+                            p.playSound(p, Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
+                        }
+                    } else {
+                        p.playSound(p, Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
+                    }
+                } else if (localizedName.equals(Items.MOUNT.getLocalizedName())) {
                     mount(p, pet);
                 } else if (localizedName.equals(Items.RENAME.getLocalizedName())) {
                     p.playSound(p, Sound.UI_BUTTON_CLICK, 1, 1);
                     changeName(p);
+                    p.closeInventory();
                 } else if (localizedName.equals(Items.INVENTORY.getLocalizedName())) {
                     p.playSound(p, Sound.UI_BUTTON_CLICK, 1, 1);
                     inventory(p, pet);
@@ -140,7 +165,6 @@ public class PetInteractionMenuListener implements Listener {
                 } else if(localizedName.equals(Items.SKINS.getLocalizedName())) {
                     skins(p, pet);
                 }
-                p.closeInventory();
             }
 
         }

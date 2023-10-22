@@ -26,7 +26,8 @@ public enum Items {
     SKINS("skins"),
     EQUIPMENT("equipment"),
     PAGE_SELECTOR("page_selector"),
-    DESPAWN("despawn");
+    DESPAWN("despawn"),
+    UPGRADE("upgrade");
 
     private ItemStack item;
     private final String name;
@@ -234,12 +235,12 @@ public enum Items {
             lore = new ArrayList<>(meta.getLore());
 
         if (pet.getCurrentName() != null && GlobalConfig.getInstance().isNameable()) {
-            lore.add(" ");
-            lore.add(Language.NICKNAME.getMessageFormatted(new FormatArg("%nickname%", pet.getCurrentName())));
-            lore.add(" ");
+            //lore.add(" ");
+            //lore.add(Language.NICKNAME.getMessageFormatted(new FormatArg("%nickname%", pet.getCurrentName())));
+            //lore.add(" ");
         }
 
-        lore.addAll(Arrays.asList(Language.NICKNAME_ITEM_LORE.getMessage().split("\n")));
+        //lore.addAll(Arrays.asList(Language.NICKNAME_ITEM_LORE.getMessage().split("\n")));
 
         meta.setLore(lore);
         meta.setLocalizedName(null);

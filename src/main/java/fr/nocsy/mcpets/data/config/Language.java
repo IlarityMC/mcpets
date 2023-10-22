@@ -1,5 +1,6 @@
 package fr.nocsy.mcpets.data.config;
 
+import fr.nocsy.mcpets.utils.Utils;
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -87,7 +88,10 @@ public enum Language {
     CATEGORY_MENU_TITLE("§0☀ §4Pets §8- Pick a category §0☀"),
     CATEGORY_DOESNT_EXIST("§cThis category does not exist."),
 
-    PET_INVENTORY_TITLE("§0☀ §4%pet% §8- §0Inventory §0☀§"),
+    PET_INVENTORY_TITLE_1("§0☀ §4%pet% §8- §0Inventory §0☀§"),
+    PET_INVENTORY_TITLE_2("§0☀ §4%pet% §8- §0Inventory §0☀§"),
+    PET_INVENTORY_TITLE_3("§0☀ §4%pet% §8- §0Inventory §0☀§"),
+    PET_INVENTORY_TITLE_4("§0☀ §4%pet% §8- §0Inventory §0☀§"),
 
     PET_SKINS_TITLE("§0☀ §4%pet% §8- §0Skins §0☀§"),
 
@@ -131,7 +135,13 @@ public enum Language {
             "\n%progressbar%"),
 
     DEBUGGER_JOINING("§aDebugger is enabled. You are now listening to it."),
-    DEBUGGER_LEAVE("§aDebugger is §7disabled§a. You will not be listening to it anymore.");
+    DEBUGGER_LEAVE("§aDebugger is §7disabled§a. You will not be listening to it anymore."),
+
+    PET_UPGRADED("§aYour pet has been upgraded!"),
+    PET_MAX_LEVEL("§cYour pet is already at max level!"),
+    NOT_ENOUGH_MONEY("§cYou don't have enough money to upgrade your pet!"),
+    PET_STATUS_UPGRADE("§7Click to upgrade!"),
+    PET_STATUS_NOT_ENOUGH_MONEY("§cYou don't have enough money!");
 
     @Getter
     private String message;
@@ -147,12 +157,14 @@ public enum Language {
     }
 
     public void sendMessage(Player p) {
+        message = Utils.hex(message);
         p.sendMessage(GlobalConfig.getInstance().getPrefix() + message);
     }
 
     public void sendMessage(CommandSender sender) {
         if(message.isEmpty())
             return;
+        message = Utils.hex(message);
         sender.sendMessage(GlobalConfig.getInstance().getPrefix() + message);
     }
 
@@ -163,6 +175,7 @@ public enum Language {
         for (FormatArg arg : args) {
             toSend = arg.applyToString(toSend);
         }
+        toSend = Utils.hex(toSend);
         sender.sendMessage(GlobalConfig.getInstance().getPrefix() + toSend);
     }
 
@@ -171,6 +184,7 @@ public enum Language {
         for (FormatArg arg : args) {
             toSend = arg.applyToString(toSend);
         }
+        toSend = Utils.hex(toSend);
         return toSend;
     }
 

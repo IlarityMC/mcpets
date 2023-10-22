@@ -40,7 +40,7 @@ public enum PetAnnouncement {
                 break;
 
             case "chat":
-                p.sendMessage(GlobalConfig.getInstance().getPrefix() + message);
+                p.sendMessage(Utils.hex(GlobalConfig.getInstance().getPrefix() + message));
                 break;
             case "actionbar":
                 Utils.sendActionBar(p, message);

@@ -135,5 +135,13 @@
             <version>R3.1.8</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>net.ilarity</groupId>
+            <artifactId>MineCore</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/MineCore-1.0.0-all.jar</systemPath>
+        </dependency>
     </dependencies>
 </project>
