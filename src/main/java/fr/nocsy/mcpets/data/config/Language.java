@@ -1,7 +1,6 @@
 package fr.nocsy.mcpets.data.config;
 
 import fr.nocsy.mcpets.utils.Utils;
-import lombok.Getter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -93,6 +92,8 @@ public enum Language {
     PET_INVENTORY_TITLE_3("§0☀ §4%pet% §8- §0Inventory §0☀§"),
     PET_INVENTORY_TITLE_4("§0☀ §4%pet% §8- §0Inventory §0☀§"),
 
+    PET_INVENTORY_COULDNOT_OPEN("§cThis inventory can not be opened as it may not exist."),
+
     PET_SKINS_TITLE("§0☀ §4%pet% §8- §0Skins §0☀§"),
 
     SKIN_COULD_NOT_APPLY("§cThe skin could not be applied to the pet."),
@@ -143,7 +144,6 @@ public enum Language {
     PET_STATUS_UPGRADE("§7Click to upgrade!"),
     PET_STATUS_NOT_ENOUGH_MONEY("§cYou don't have enough money!");
 
-    @Getter
     private String message;
 
     Language(String message) {
@@ -156,31 +156,49 @@ public enum Language {
         }
     }
 
+    public String getMessage()
+    {
+        String m = Utils.hex(message);
+
+        m = Utils.applyPlaceholders(null, m);
+        return m;
+    }
+
+    public String getMessagePAPI(Player p)
+    {
+        String m = Utils.hex(message);
+
+        m = Utils.applyPlaceholders(null, m);
+        return m;
+    }
+
     public void sendMessage(Player p) {
         message = Utils.hex(message);
-        p.sendMessage(GlobalConfig.getInstance().getPrefix() + message);
+        if(message.isEmpty())
+            return;
+        p.sendMessage(Utils.hex(GlobalConfig.getInstance().getPrefix() + getMessagePAPI(p)));
     }
 
     public void sendMessage(CommandSender sender) {
         if(message.isEmpty())
             return;
         message = Utils.hex(message);
-        sender.sendMessage(GlobalConfig.getInstance().getPrefix() + message);
+        sender.sendMessage(Utils.hex(GlobalConfig.getInstance().getPrefix() + getMessage()));
     }
 
     public void sendMessageFormated(CommandSender sender, FormatArg... args) {
         if(message.isEmpty())
             return;
-        String toSend = message;
+        String toSend = getMessage();
         for (FormatArg arg : args) {
             toSend = arg.applyToString(toSend);
         }
         toSend = Utils.hex(toSend);
-        sender.sendMessage(GlobalConfig.getInstance().getPrefix() + toSend);
+        sender.sendMessage(Utils.hex(GlobalConfig.getInstance().getPrefix() + toSend));
     }
 
     public String getMessageFormatted(FormatArg... args) {
-        String toSend = message;
+        String toSend = getMessage();
         for (FormatArg arg : args) {
             toSend = arg.applyToString(toSend);
         }

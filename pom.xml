@@ -108,7 +108,7 @@
         <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>Mythic-Dist</artifactId>
-            <version>5.3.3-SNAPSHOT</version>
+            <version>5.4.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -132,7 +132,7 @@
         <dependency>
             <groupId>com.ticxo.modelengine</groupId>
             <artifactId>ModelEngine</artifactId>
-            <version>R4.0.0</version>
+            <version>R4.0.3</version>
         </dependency>
         <dependency>
             <groupId>net.ilarity</groupId>

@@ -79,6 +79,15 @@ public class PetInventory {
         }
     }
 
+    public static PetInventory get(UUID owner, String petId)
+    {
+        Pet pet = Pet.getFromId(petId);
+        if(pet == null)
+            return null;
+        pet.setOwner(owner);
+        return get(pet);
+    }
+
     /**
      * Get the corresponding pet inventory of the said pet
      * null if the pet has no owner
