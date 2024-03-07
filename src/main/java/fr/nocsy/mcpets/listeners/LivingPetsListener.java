@@ -46,7 +46,6 @@ public class LivingPetsListener implements Listener {
         {
             PetDamagedEvent event = new PetDamagedEvent(pet, e.getDamage(), true);
             Utils.callEvent(event);
-
             e.setCancelled(event.isCancelled());
             e.setDamage(event.getModifiedDamageAmount());
         }

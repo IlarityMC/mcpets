@@ -91,27 +91,27 @@ public class PetListener implements Listener {
          */
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void interact(EntityDamageByEntityEvent e) {
-        System.out.println("0");
+
         if (!GlobalConfig.getInstance().isLeftClickToOpen())
             return;
-        System.out.println("0.5");
+
         if (!(e.getDamager() instanceof Player))
             return;
 
         Player p = (Player) e.getDamager();
-        System.out.println("1");
+
         if (GlobalConfig.getInstance().isSneakMode() && !p.isSneaking())
             return;
-        System.out.println("2");
+
         Entity ent = e.getEntity();
 
         Pet pet = Pet.getFromEntity(ent);
 
         if (pet != null && pet.getOwner() != null &&
                 pet.getOwner().equals(p.getUniqueId())) {
-            System.out.println("3");
+
             PetInteractionMenu menu = new PetInteractionMenu(pet, p.getUniqueId());
             pet.setLastInteractedWith(p);
             menu.open(p);
