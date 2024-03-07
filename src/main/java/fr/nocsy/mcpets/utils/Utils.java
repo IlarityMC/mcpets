@@ -1,12 +1,10 @@
 package fr.nocsy.mcpets.utils;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import fr.nocsy.mcpets.MCPets;
 import fr.nocsy.mcpets.data.config.BlacklistConfig;
 import me.clip.placeholderapi.PlaceholderAPI;
-import net.luckperms.api.model.user.User;
-import net.luckperms.api.node.Node;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -16,10 +14,15 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.profile.PlayerProfile;
+import org.bukkit.profile.PlayerTextures;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Base64;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -28,27 +31,41 @@ import java.util.regex.Pattern;
 
 public class Utils {
 
-    @SuppressWarnings("deprecation")
     public static ItemStack createHead(String name, List<String> lore, String base64) {
         ItemStack item = new ItemStack(Material.PLAYER_HEAD);
-        item.setDurability((short) 3);
-        SkullMeta headMeta = (SkullMeta) item.getItemMeta();
-
-        headMeta.setDisplayName(name);
-        headMeta.setLore(lore);
-
-        item.setItemMeta(headMeta);
-        GameProfile profile = new GameProfile(UUID.randomUUID(), "MCPetsHeads");
-        profile.getProperties().put("textures", new Property("textures", base64));
-        Field profileField = null;
+        SkullMeta meta = (SkullMeta) item.getItemMeta();
+        meta.setDisplayName(name);
+        meta.setLore(lore);
         try {
-            profileField = headMeta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(headMeta, profile);
-        } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException localNoSuchFieldException) {
+            byte[] decodedBytes = Base64.getDecoder().decode(base64);
+            String decodedString = new String(decodedBytes);
+
+            JsonParser parser = new JsonParser();
+            JsonObject jsonObject = parser.parse(decodedString).getAsJsonObject();
+            String url = jsonObject.getAsJsonObject("textures").getAsJsonObject("SKIN").get("url").getAsString();
+
+            PlayerProfile pp = Bukkit.createPlayerProfile(UUID.fromString("4fbecd49-c7d4-4c18-8410-adf7a7348728"));
+            PlayerTextures pt = pp.getTextures();
+            URL urlObject = null;
+            try {
+                urlObject = new URL(url);
+            } catch (MalformedURLException e) {
+                try {
+                    urlObject = new URL("http://textures.minecraft.net/texture/8dcfabbbb4d7b0381135bf07b6af3de920ab4c366c06c37fa4c4e8b8f43bbb2b");
+                } catch (MalformedURLException malformedURLException) {
+                    malformedURLException.printStackTrace();
+                }
+            }
+
+            pt.setSkin(urlObject);
+            pp.setTextures(pt);
+            meta.setOwnerProfile(pp);
+            item.setItemMeta(meta);
+            return item;
+        } catch (Exception e) {
+            item.setItemMeta(meta);
+            return item;
         }
-        item.setItemMeta(headMeta);
-        return item;
     }
 
     public static double distance(Location loc1, Location loc2) {

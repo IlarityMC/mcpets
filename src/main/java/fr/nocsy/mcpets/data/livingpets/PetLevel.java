@@ -182,13 +182,11 @@ public class PetLevel {
      */
     public boolean canEvolve(UUID player, Pet evolution)
     {
-        if(evolution != null)
-        {
-            // If the owner already has the evolution, then we say that the pet can not evolve
-            // Else it can evolve
-            return !Utils.hasPermission(player, evolution.getPermission());
-        }
-        return true;
+        if(player == null || evolution == null)
+            return false;
+        // If the owner already has the evolution, then we say that the pet can not evolve
+        // Else it can evolve
+        return !Utils.hasPermission(player, evolution.getPermission());
     }
 
     /**
@@ -321,34 +319,19 @@ public class PetLevel {
         evolve(owner, false);
     }
 
-    private double getBuffedModifier(double originalValue, PetFoodType modifier)
-    {
-        double value = originalValue;
-
-        for(PetFoodBuff buff : PetFoodBuff.getBuffs(pet))
-        {
-            if(buff.getType() == modifier)
-            {
-                value = buff.getOperator().get(value, buff.getPower());
-            }
-        }
-
-        return value;
+    public double getFlatDamageModifier() {
+        return damageModifier;
     }
 
-    public double getDamageModifier() {
-        return getBuffedModifier(damageModifier, PetFoodType.BUFF_DAMAGE);
-    }
-
-    public double getResistanceModifier() {
-        double value = getBuffedModifier(resistanceModifier, PetFoodType.BUFF_RESISTANCE);
+    public double getFlatResistanceModifier() {
+        double value = resistanceModifier;
         if(value == 0)
             return value = 10E-5;
         return value;
     }
 
-    public double getPower() {
-        return getBuffedModifier(power, PetFoodType.BUFF_POWER);
+    public double getFlatPower() {
+        return power;
     }
 
     public int compareTo(PetLevel level)

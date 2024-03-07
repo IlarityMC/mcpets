@@ -29,13 +29,14 @@ public class PetMenu {
     @Getter
     private final UUID owner;
 
-    public PetMenu(Player p, int page, boolean addPager) {
+    public PetMenu(Player p, int page) {
         // Load the data from the player
         // Mainly for the pet stats
         PlayerData.get(p.getUniqueId());
         owner = p.getUniqueId();
 
         List<Pet> availablePets = Pet.getAvailablePets(p);
+
 
         List<Pet> allPets = Pet.getObjectPets();
         List<Pet> lockedPets = new ArrayList<>();
@@ -46,9 +47,6 @@ public class PetMenu {
             }
         }
 
-        System.out.println("available pets: " + availablePets.size());
-        System.out.println("locked pets: " + lockedPets.size());
-
         int invSize = GlobalConfig.getInstance().getAdaptiveInventory();
 
         inventory = Bukkit.createInventory(null, invSize, title);
@@ -58,7 +56,7 @@ public class PetMenu {
                 System.out.println("i: " + i + " available size: " + availablePets.size());
                 // add locked icon, check if enough
                 int lockedIndex = i - availablePets.size();
-                if(lockedIndex >= lockedPets.size())
+                if (lockedIndex >= lockedPets.size())
                     continue;
                 System.out.println("locked index: " + lockedIndex);
                 Pet pet = lockedPets.get(lockedIndex);
@@ -83,24 +81,19 @@ public class PetMenu {
             ItemMeta meta = item.getItemMeta();
             List<String> lore = meta.getLore();
             lore.replaceAll(line -> {
-                return line.replace("%damagemodifier%", "+" + (int) (100 * (pet.getPetStats().getCurrentLevel().getDamageModifier() - 1)))
+                return line.replace("%damagemodifier%", "+" + (int) (100 * (pet.getPetStats().getCurrentLevel().getFlatDamageModifier() - 1)))
                         .replace("%level%", pet.getPetStats().getCurrentLevel().getLevelName());
             });
             meta.setLore(lore);
             item.setItemMeta(meta);
 
             inventory.addItem(item);
-
         }
-
-        if (addPager) {
-            inventory.setItem(invSize - 1, Items.page(page, p));
-        }
-
     }
 
+
     public void open(Player p) {
-        if(p.getUniqueId().equals(owner) && Category.getCategories().size() > 0)
+        if(p.getUniqueId().equals(owner) && !Category.getCategories().isEmpty())
         {
             CategoriesMenu.open(p);
             return;

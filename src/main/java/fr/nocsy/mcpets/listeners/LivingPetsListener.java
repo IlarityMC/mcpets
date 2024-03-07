@@ -13,6 +13,7 @@ import fr.nocsy.mcpets.data.sql.Databases;
 import fr.nocsy.mcpets.data.sql.PlayerData;
 import fr.nocsy.mcpets.events.*;
 import fr.nocsy.mcpets.utils.Utils;
+import fr.nocsy.mcpets.utils.debug.Debugger;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -46,6 +47,9 @@ public class LivingPetsListener implements Listener {
         {
             PetDamagedEvent event = new PetDamagedEvent(pet, e.getDamage(), true);
             Utils.callEvent(event);
+
+            Debugger.send("§7PetDamagedEvent triggered for pet §6" + pet.getId() + "§7 with original damages §6" + e.getDamage() + "§7 and modified damages §6" + event.getModifiedDamageAmount() + "§7.");
+
             e.setCancelled(event.isCancelled());
             e.setDamage(event.getModifiedDamageAmount());
         }
@@ -114,6 +118,15 @@ public class LivingPetsListener implements Listener {
                     return;
                 }
 
+                if(petFood.getType().name().contains("BUFF"))
+                {
+                    // Cancel the interaction event
+                    e.setCancelled(true);
+                    if(petFood.apply(pet, p))
+                        petFood.consume(p);
+                    return;
+                }
+
                 if(petFood.getType().equals(PetFoodType.EVOLUTION) &&
                         pet.getOwner() != null &&
                         pet.getOwner().equals(p.getUniqueId()))
@@ -155,7 +168,9 @@ public class LivingPetsListener implements Listener {
                     // Call the pet tamed by player event
                     PetTamedByPlayerEvent event = new PetTamedByPlayerEvent(pet, p, petFood);
                     Utils.callEvent(event);
+                    return;
                 }
+
                 // The pet has already been tamed, so let's do nothing
                 else
                 {

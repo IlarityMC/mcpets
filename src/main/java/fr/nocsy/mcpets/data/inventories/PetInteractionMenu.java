@@ -88,7 +88,7 @@ public class PetInteractionMenu {
 
         metaLore.set(2, "§7Level: %levelname% §8(§7%damagemodifier%%§8)"
                         .replace("%levelname%", pet.getPetStats().getCurrentLevel().getLevelName())
-                        .replace("%damagemodifier%", "+" + (int) (100 * (pet.getPetStats().getCurrentLevel().getDamageModifier() - 1))));
+                        .replace("%damagemodifier%", "+" + (int) (100 * (pet.getPetStats().getCurrentLevel().getFlatDamageModifier() - 1))));
 
         iconMeta.setLore(metaLore);
         icon.setItemMeta(iconMeta);

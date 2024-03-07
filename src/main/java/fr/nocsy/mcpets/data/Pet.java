@@ -1019,7 +1019,7 @@ public class Pet {
      * Teleport the pet to the player
      */
     public void teleportToPlayer(Player p) {
-        Location loc = Utils.bruised(p.getLocation(), getDistance());
+        Location loc = Utils.bruised(p.getLocation(), Math.min(getSpawnRange(), getDistance()));
         Debugger.send("§7teleporting pet " + id + " to player " + p.getName());
         if (isStillHere())
             this.teleport(loc);
@@ -1413,9 +1413,16 @@ public class Pet {
             iconName = "§cUndefined";
         iconName = Utils.translateHexColorCodes("#", "", iconName);
         iconName = Utils.applyPlaceholders(owner, iconName);
+        ArrayList<String> desc = new ArrayList<>();
+        if (description != null)
+        {
+            for (String s : description) {
+                desc.add(Utils.applyPlaceholders(owner, Utils.translateHexColorCodes("#", "", s)));
+            }
+        }
         if (mat == null
                 && textureBase64 != null) {
-            item = Utils.createHead(iconName, description, textureBase64);
+            item = Utils.createHead(iconName, desc, textureBase64);
             ItemMeta meta = item.getItemMeta();
             meta.setLocalizedName(localizedName);
             item.setItemMeta(meta);
@@ -1425,10 +1432,10 @@ public class Pet {
             meta.setLocalizedName(localizedName);
             meta.setCustomModelData(customModelData);
             meta.setDisplayName(iconName);
-            meta.setLore(description);
+            meta.setLore(desc);
             item.setItemMeta(meta);
         } else if(item == null){
-            item = Utils.createHead(iconName, description, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQ5Y2M1OGFkMjVhMWFiMTZkMzZiYjVkNmQ0OTNjOGY1ODk4YzJiZjMwMmI2NGUzMjU5MjFjNDFjMzU4NjcifX19");
+            item = Utils.createHead(iconName, desc, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQ5Y2M1OGFkMjVhMWFiMTZkMzZiYjVkNmQ0OTNjOGY1ODk4YzJiZjMwMmI2NGUzMjU5MjFjNDFjMzU4NjcifX19");
             ItemMeta meta = item.getItemMeta();
             meta.setLocalizedName(localizedName);
             item.setItemMeta(meta);
@@ -1476,9 +1483,9 @@ public class Pet {
             }
 
             // Get the positive or negative sign symbol of the bonus
-            String signSymbol_damageModifer = Utils.getSignSymbol(petStats.getCurrentLevel().getDamageModifier() - 1);
-            String signSymbol_resistanceModifer = Utils.getSignSymbol(petStats.getCurrentLevel().getResistanceModifier() - 1);
-            String signSymbol_power = Utils.getSignSymbol(petStats.getCurrentLevel().getPower() - 1);
+            String signSymbol_damageModifer = Utils.getSignSymbol(petStats.getDamageModifier() - 1);
+            String signSymbol_resistanceModifer = Utils.getSignSymbol(petStats.getResistanceModifier() - 1);
+            String signSymbol_power = Utils.getSignSymbol(petStats.getPower() - 1);
 
             String currentHealthStr = Integer.toString((int) petStats.getCurrentHealth());
             if (petStats.getCurrentHealth() == 0 &&
@@ -1500,9 +1507,9 @@ public class Pet {
                     new FormatArg("%health%", currentHealthStr),
                     new FormatArg("%maxhealth%", Integer.toString((int) petStats.getCurrentLevel().getMaxHealth())),
                     new FormatArg("%regeneration%", Double.toString(petStats.getCurrentLevel().getRegeneration())),
-                    new FormatArg("%damagemodifier%", signSymbol_damageModifer + (int) (100 * (petStats.getCurrentLevel().getDamageModifier() - 1))),
-                    new FormatArg("%resistancemodifier%", signSymbol_resistanceModifer + (int) (100 * (petStats.getCurrentLevel().getResistanceModifier() - 1))),
-                    new FormatArg("%power%", signSymbol_power + (int) (100 * (petStats.getCurrentLevel().getPower() - 1))),
+                    new FormatArg("%damagemodifier%", signSymbol_damageModifer + (int) (100 * (petStats.getDamageModifier() - 1))),
+                    new FormatArg("%resistancemodifier%", signSymbol_resistanceModifer + (int) (100 * (petStats.getResistanceModifier() - 1))),
+                    new FormatArg("%power%", signSymbol_power + (int) (100 * (petStats.getPower() - 1))),
                     new FormatArg("%experience%", Integer.toString((int) petStats.getExperience())),
                     new FormatArg("%threshold%", Integer.toString((int) petStats.getNextLevel().getExpThreshold())),
                     new FormatArg("%progressbar%", progressBar.toString()));
