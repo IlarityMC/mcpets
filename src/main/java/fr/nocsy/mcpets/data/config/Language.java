@@ -15,6 +15,8 @@ public enum Language {
     RENAME_ITEM_NAME("§6Rename"),
     RENAME_ITEM_DESCRIPTION("§7Click to rename your pet"),
 
+    NOT_ENOUGH_MONEY("§cYou don't have enough money."),
+
     BACK_TO_PETMENU_ITEM_NAME("§cBack to menu"),
     BACK_TO_PETMENU_ITEM_DESCRIPTION("§7Click to get back to the menu"),
 
@@ -29,6 +31,11 @@ public enum Language {
 
     TURNPAGE_ITEM_NAME("§6Next page §7(§e%currentPage%§8/§7%maxPage%)"),
     TURNPAGE_ITEM_DESCRIPTION("§eRight click§7 to go forward \n§aLeft click§7 to go backward"),
+
+    PET_INVENTORY_TITLE_1("§0☀ §4%pet% §8- §0Inventory §0☀§"),
+    PET_INVENTORY_TITLE_2("§0☀ §4%pet% §8- §0Inventory §0☀§"),
+    PET_INVENTORY_TITLE_3("§0☀ §4%pet% §8- §0Inventory §0☀§"),
+    PET_INVENTORY_TITLE_4("§0☀ §4%pet% §8- §0Inventory §0☀§"),
 
     NICKNAME("§9Nickname : §7%nickname%"),
     NICKNAME_ITEM_LORE("§cClick here to revoke your pet"),
