@@ -7,15 +7,14 @@ import fr.nocsy.mcpets.data.Pet;
 import fr.nocsy.mcpets.data.PetDespawnReason;
 import fr.nocsy.mcpets.data.PetSkin;
 import fr.nocsy.mcpets.data.config.FormatArg;
-import fr.nocsy.mcpets.data.config.GlobalConfig;
 import fr.nocsy.mcpets.data.config.Language;
 import fr.nocsy.mcpets.data.inventories.PetInteractionMenu;
 import fr.nocsy.mcpets.data.inventories.PetInventory;
 import fr.nocsy.mcpets.data.inventories.PetMenu;
 import fr.nocsy.mcpets.data.livingpets.PetLevel;
 import fr.nocsy.mcpets.utils.Utils;
+import it.obsmc.survival.storage.user.User;
 import lombok.Getter;
-import net.ilarity.minecore.storage.user.User;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -102,9 +101,9 @@ public class PetInteractionMenuListener implements Listener {
             }
 
             ItemStack it = e.getCurrentItem();
-            if (it != null && it.hasItemMeta() && it.getItemMeta().hasDisplayName() && it.getItemMeta().hasLocalizedName()) {
+            if (it != null && it.hasItemMeta() && it.getItemMeta().hasDisplayName() && it.getItemMeta().hasItemName()) {
 
-                String localizedName = it.getItemMeta().getLocalizedName();
+                String localizedName = it.getItemMeta().getItemName();
                 if (localizedName.contains("AlmPetPage;"))
                     return;
 

@@ -5,16 +5,12 @@ import fr.nocsy.mcpets.PPermission;
 import fr.nocsy.mcpets.data.Items;
 import fr.nocsy.mcpets.data.Pet;
 import fr.nocsy.mcpets.data.PetSkin;
-import fr.nocsy.mcpets.utils.PetAnnouncement;
 import fr.nocsy.mcpets.data.livingpets.PetLevel;
-import fr.nocsy.mcpets.utils.Utils;
-import io.lumine.mythic.api.mobs.MythicMob;
-import io.lumine.mythic.api.skills.Skill;
+import fr.nocsy.mcpets.utils.PetAnnouncement;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -195,38 +191,11 @@ public class PetConfig extends AbstractConfig {
         pet.setSignals(signals);
         pet.setEnableSignalStickFromMenu(enableSignalStickFromMenu);
 
-        if (despawnSkillName != null) {
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    Optional<Skill> optionalSkill = MCPets.getMythicMobs().getSkillManager().getSkill(despawnSkillName);
-                    optionalSkill.ifPresent(pet::setDespawnSkill);
-                    if (pet.getDespawnSkill() == null) {
-                        MCPets.getLog().warning(MCPets.getLogName() + "Impossible to link the despawn skill \"" + despawnSkillName + "\" to the pet \"" + pet.getId() + "\", because this skill doesn't exist.");
-                    }
-                }
-            }.runTaskLater(MCPets.getInstance(), 5L);
-        }
-        if (tamingSkillName != null) {
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    Optional<Skill> optionalSkill = MCPets.getMythicMobs().getSkillManager().getSkill(tamingSkillName);
-                    optionalSkill.ifPresent(pet::setTamingProgressSkill);
-                }
-            }.runTaskLater(MCPets.getInstance(), 5L);
-        }
-        if (tamingOverSkillName != null) {
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    Optional<Skill> optionalSkill = MCPets.getMythicMobs().getSkillManager().getSkill(tamingOverSkillName);
-                    optionalSkill.ifPresent(pet::setTamingOverSkill);
-                }
-            }.runTaskLater(MCPets.getInstance(), 5L);
-        }
+        pet.setDespawnSkill(despawnSkillName);
+        pet.setTamingProgressSkill(tamingSkillName);
+        pet.setTamingOverSkill(tamingOverSkillName);
 
-        ItemStack icon = legacyItemRead(pet.getIcon(), false, pet.toString(), "§cIcon (not set)", "Icon");
+        ItemStack icon = legacyItemRead(pet.getIcon(), true, pet.toString(), "§cIcon (not set)", "Icon");
         pet.setIcon(icon);
 
         ItemStack signalStickItem = legacyItemRead(pet.getSignalStick(), false, Items.buildSignalStickTag(pet), "§cSignal stick (not set)", "Signals.Item");
@@ -243,7 +212,7 @@ public class PetConfig extends AbstractConfig {
         {
             itemStack = getConfig().getItemStack(path + ".Raw");
             ItemMeta meta = itemStack.getItemMeta();
-            meta.setLocalizedName(localName);
+            meta.setItemName(localName);
             itemStack.setItemMeta(meta);
             if(showStats)
                 itemStack = pet.applyStats(itemStack);
@@ -266,7 +235,6 @@ public class PetConfig extends AbstractConfig {
             int data = getConfig().getInt(path + ".CustomModelData");
             String textureBase = getConfig().getString(path + ".TextureBase64");
             List<String> description = getConfig().getStringList(path + ".Description");
-            description.replaceAll(Utils::hex);
             itemStack = pet.buildItem(
                     item,
                     showStats,

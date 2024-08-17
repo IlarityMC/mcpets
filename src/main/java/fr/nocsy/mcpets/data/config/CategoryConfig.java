@@ -5,7 +5,6 @@ import fr.nocsy.mcpets.data.Category;
 import fr.nocsy.mcpets.data.Items;
 import fr.nocsy.mcpets.data.Pet;
 import fr.nocsy.mcpets.data.editor.EditorEditing;
-import fr.nocsy.mcpets.utils.Utils;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -135,7 +134,7 @@ public class CategoryConfig extends AbstractConfig {
     {
         ItemStack it = Items.UNKNOWN.getItem().clone();
         ItemMeta meta = it.getItemMeta();
-        meta.setLocalizedName("MCPets;" + id);
+        meta.setItemName("MCPets;" + id);
         meta.setDisplayName("§6" + id);
         it.setItemMeta(meta);
         return it;

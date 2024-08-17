@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import fr.nocsy.mcpets.MCPets;
 import fr.nocsy.mcpets.data.config.BlacklistConfig;
+import io.lumine.mythic.api.skills.Skill;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -14,7 +15,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.profile.PlayerProfile;
 import org.bukkit.profile.PlayerTextures;
@@ -22,10 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Base64;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -312,6 +309,11 @@ public class Utils {
         if(p == null)
             return PlaceholderAPI.setPlaceholders(Bukkit.getOfflinePlayer(uuid), msg);
         return PlaceholderAPI.setPlaceholders(p, msg);
+    }
+
+    public static Skill getSkill(String skillName) {
+        Optional<Skill> optionalSkill = MCPets.getMythicMobs().getSkillManager().getSkill(skillName);
+        return optionalSkill.orElse(null);
     }
 
 }

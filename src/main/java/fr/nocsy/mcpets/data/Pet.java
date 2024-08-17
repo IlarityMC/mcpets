@@ -35,12 +35,12 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityMountEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
-import org.spigotmc.event.entity.EntityMountEvent;
 
 import java.util.*;
 
@@ -129,15 +129,15 @@ public class Pet {
 
     @Getter
     @Setter
-    private Skill despawnSkill;
+    private String despawnSkill;
 
     @Getter
     @Setter
-    private Skill tamingProgressSkill;
+    private String tamingProgressSkill;
 
     @Getter
     @Setter
-    private Skill tamingOverSkill;
+    private String tamingOverSkill;
 
     @Getter
     @Setter
@@ -307,8 +307,8 @@ public class Pet {
      * @return
      */
     public static Pet getFromIcon(ItemStack icon) {
-        if (icon.hasItemMeta() && icon.getItemMeta().hasLocalizedName()) {
-            return fromString(icon.getItemMeta().getLocalizedName());
+        if (icon.hasItemMeta() && icon.getItemMeta().hasItemName()) {
+            return fromString(icon.getItemMeta().getItemName());
         }
         return null;
     }
@@ -489,17 +489,19 @@ public class Pet {
                         petStats.setHealth(petStats.getCurrentLevel().getMaxHealth());
                     }
                 }.runTaskLater(MCPets.getInstance(), 2L);
-                if (tamingOverSkill != null) {
+                Skill tamingOverSkillMM = Utils.getSkill(tamingOverSkill);
+                if (tamingOverSkillMM != null) {
                     try {
-                        tamingOverSkill.execute(new SkillMetadataImpl(SkillTriggers.CUSTOM, activeMob, activeMob.getEntity()));
+                        tamingOverSkillMM.execute(new SkillMetadataImpl(SkillTriggers.CUSTOM, activeMob, activeMob.getEntity()));
                     } catch (Exception ignored) {}
                 }
             }
             else
             {
-                if (tamingProgressSkill != null) {
+                Skill tamingProgressSkillMM = Utils.getSkill(tamingProgressSkill);
+                if (tamingProgressSkillMM != null) {
                     try {
-                        tamingProgressSkill.execute(new SkillMetadataImpl(SkillTriggers.CUSTOM, activeMob, activeMob.getEntity()));
+                        tamingProgressSkillMM.execute(new SkillMetadataImpl(SkillTriggers.CUSTOM, activeMob, activeMob.getEntity()));
                     } catch (Exception ignored) {}
                 }
             }
@@ -520,12 +522,12 @@ public class Pet {
         // If it already has registered pet stats, then we just read them from the loaded ones
         // Else we create default pet stats that will server as the base
         petStats = Optional.ofNullable(PetStats.get(id, owner)).orElseGet(() ->
-                                                                              {
-                                                                                  PetStats start = new PetStats(this, 0, petLevels.get(0).getMaxHealth(), petLevels.get(0));
-                                                                                  // We register the pet stats if we have new ones created
-                                                                                  PetStats.register(start);
-                                                                                  return start;
-                                                                              });
+        {
+            PetStats start = new PetStats(this, 0, petLevels.get(0).getMaxHealth(), petLevels.get(0));
+            // We register the pet stats if we have new ones created
+            PetStats.register(start);
+            return start;
+        });
     }
 
     /**
@@ -654,7 +656,7 @@ public class Pet {
                         BukkitAdapter.adapt(ent),
                         MCPets.getMythicMobs().getMobManager().getMythicMob(mythicMobName).get(),
                         0
-                        );
+                );
                 if(mob != null)
                     setActiveMob(mob);
             }
@@ -971,10 +973,11 @@ public class Pet {
             if(reason != PetDespawnReason.DEATH)
             {
                 // Do we have a despawn skill to trigger or a skin swap?
-                if (despawnSkill != null
+                Skill despawnSkillMM = Utils.getSkill(despawnSkill);
+                if (despawnSkillMM != null
                         && reason != PetDespawnReason.SKIN) {
                     try {
-                        despawnSkill.execute(new SkillMetadataImpl(SkillTriggers.CUSTOM, activeMob, activeMob.getEntity()));
+                        despawnSkillMM.execute(new SkillMetadataImpl(SkillTriggers.CUSTOM, activeMob, activeMob.getEntity()));
                     } catch (Exception ex) {
                         if (activeMob.getEntity() != null && activeMob.getEntity().getBukkitEntity() != null)
                         {
@@ -1147,6 +1150,8 @@ public class Pet {
         pet.setSpawnRange(spawnRange);
         pet.setComingBackRange(comingBackRange);
         pet.setDespawnSkill(despawnSkill);
+        pet.setTamingProgressSkill(tamingProgressSkill);
+        pet.setTamingOverSkill(tamingOverSkill);
         pet.setMountable(mountable);
         pet.setMountPermission(mountPermission);
         pet.setDespawnOnDismount(despawnOnDismount);
@@ -1199,7 +1204,7 @@ public class Pet {
                 if(ent.getVehicle() != null)
                     ent.getVehicle().eject();
                 if(mountManager.getDriver() != null)
-                mountManager.dismountDriver();
+                    mountManager.dismountDriver();
                 try
                 {
                     mountManager.mountDriver(ent, controllerType);
@@ -1424,12 +1429,12 @@ public class Pet {
                 && textureBase64 != null) {
             item = Utils.createHead(iconName, desc, textureBase64);
             ItemMeta meta = item.getItemMeta();
-            meta.setLocalizedName(localizedName);
+            meta.setItemName(localizedName);
             item.setItemMeta(meta);
         } else if (mat != null) {
             item = new ItemStack(mat);
             ItemMeta meta = item.getItemMeta();
-            meta.setLocalizedName(localizedName);
+            meta.setItemName(localizedName);
             meta.setCustomModelData(customModelData);
             meta.setDisplayName(iconName);
             meta.setLore(desc);
@@ -1437,7 +1442,7 @@ public class Pet {
         } else if(item == null){
             item = Utils.createHead(iconName, desc, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQ5Y2M1OGFkMjVhMWFiMTZkMzZiYjVkNmQ0OTNjOGY1ODk4YzJiZjMwMmI2NGUzMjU5MjFjNDFjMzU4NjcifX19");
             ItemMeta meta = item.getItemMeta();
-            meta.setLocalizedName(localizedName);
+            meta.setItemName(localizedName);
             item.setItemMeta(meta);
         }
 
@@ -1464,21 +1469,33 @@ public class Pet {
             StringBuilder progressBar = new StringBuilder();
             PetLevel nextLevel = petStats.getNextLevel();
             if (nextLevel != null) {
-                // Size of the progress bar in the hovering
-                int progressBarSize = GlobalConfig.instance.getExperienceBarSize();
+                if(nextLevel.equals(petStats.getCurrentLevel()))
+                {
+                    progressBar.append(Language.PET_STATS_MAX_LEVEL.getMessage());
+                }
+                else
+                {
+                    // Size of the progress bar in the hovering
+                    int progressBarSize = GlobalConfig.instance.getExperienceBarSize();
 
-                double experienceRatio = (petStats.getExperience() - petStats.getCurrentLevel().getExpThreshold()) / (nextLevel.getExpThreshold() - petStats.getCurrentLevel().getExpThreshold());
-                int indexProgress = Math.min(progressBarSize, (int) (experienceRatio * progressBarSize + 0.5));
+                    double experienceRatio = (petStats.getExperience() - petStats.getCurrentLevel().getExpThreshold()) / (nextLevel.getExpThreshold() - petStats.getCurrentLevel().getExpThreshold());
+                    int indexProgress = Math.min(progressBarSize, (int) (experienceRatio * progressBarSize + 0.5));
 
-                for (int i = 0; i < progressBarSize; i++) {
-                    if (i < indexProgress)
-                        progressBar.append(GlobalConfig.getInstance().getExperienceColorDone() +
-                                GlobalConfig.getInstance().getExperienceSymbol() +
-                                GlobalConfig.getInstance().getExperienceColorLeft());
-                    else
-                        progressBar.append(GlobalConfig.getInstance().getExperienceColorLeft() +
-                                GlobalConfig.getInstance().getExperienceSymbol() +
-                                GlobalConfig.getInstance().getExperienceColorLeft());
+                    for (int i = 0; i < progressBarSize; i++) {
+                        if (i < indexProgress)
+                            progressBar.append(GlobalConfig.getInstance().getExperienceColorDone() +
+                                    GlobalConfig.getInstance().getExperienceSymbol() +
+                                    GlobalConfig.getInstance().getExperienceColorLeft());
+                        else
+                            progressBar.append(GlobalConfig.getInstance().getExperienceColorLeft() +
+                                    GlobalConfig.getInstance().getExperienceSymbol() +
+                                    GlobalConfig.getInstance().getExperienceColorLeft());
+                    }
+                }
+                if(nextLevel.getEvolutionId() != null &&
+                        !nextLevel.canEvolve(owner,  Pet.getFromId(nextLevel.getEvolutionId())))
+                {
+                    progressBar.append('\n').append(Language.PET_STATS_EVOLUTION_ALREADY_OWNED.getMessage());
                 }
             }
 

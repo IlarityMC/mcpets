@@ -3,7 +3,6 @@ package fr.nocsy.mcpets.data.livingpets;
 import fr.nocsy.mcpets.MCPets;
 import fr.nocsy.mcpets.data.Pet;
 import fr.nocsy.mcpets.data.PetDespawnReason;
-import fr.nocsy.mcpets.data.config.FormatArg;
 import fr.nocsy.mcpets.data.config.Language;
 import fr.nocsy.mcpets.data.inventories.PetInventory;
 import fr.nocsy.mcpets.data.sql.PlayerData;
@@ -182,8 +181,12 @@ public class PetLevel {
      */
     public boolean canEvolve(UUID player, Pet evolution)
     {
-        if(player == null || evolution == null)
+        if(player == null)
             return false;
+
+        if (evolution == null)
+            return true;
+
         // If the owner already has the evolution, then we say that the pet can not evolve
         // Else it can evolve
         return !Utils.hasPermission(player, evolution.getPermission());

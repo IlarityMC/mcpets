@@ -1,8 +1,6 @@
 package fr.nocsy.mcpets.data;
 
-import fr.nocsy.mcpets.data.config.CategoryConfig;
-import fr.nocsy.mcpets.data.config.FormatArg;
-import fr.nocsy.mcpets.data.config.Language;
+import fr.nocsy.mcpets.data.config.GlobalConfig;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -63,15 +61,15 @@ public class Category {
 
         p.closeInventory();
 
-        int invSize = pets.size() - page*53 + 1; //Adding 1 for the page manager
-        invSize = Math.min(54, invSize);
-        while(invSize <= 0 || invSize%9 != 0)
+        int invSize = GlobalConfig.getInstance().getAdaptiveInventory();
+        // If we're using the adaptive inventory, we need to calculate the size of the inventory
+        if(invSize <= 0)
         {
-            invSize++;
+            invSize = pets.size() - page * 53 + 1; //Adding 1 for the page manager
         }
 
         ArrayList<Pet> showedPets = new ArrayList<>();
-        for(int i = page*53; i < pets.size(); i++)
+        for(int i = page*(invSize-1); i < pets.size(); i++)
         {
             if(showedPets.size() >= invSize-1)
                 break;
@@ -83,11 +81,14 @@ public class Category {
         if(showedPets.isEmpty() && page > 0)
             return false;
 
-        invSize = showedPets.size();
-        if(maxPages > 1)
-            invSize++;
-        while(invSize <= 0 || invSize % 9 != 0)
-            invSize++;
+        // Adaptive inventory setting
+        if(GlobalConfig.getInstance().getAdaptiveInventory() <= 0) {
+            invSize = showedPets.size();
+            if(maxPages > 1)
+                invSize++;
+            while(invSize <= 0 || invSize % 9 != 0)
+                invSize++;
+        }
 
         Inventory inventory = Bukkit.createInventory(null,  invSize, displayName);
 
@@ -113,9 +114,21 @@ public class Category {
     {
         this.maxPages = 1;
         int count = pets.size();
-        while(count > 0)
+
+        int invSize = GlobalConfig.getInstance().getAdaptiveInventory();
+        if(invSize > 0)
         {
-            if(count%53 == 0)
+            while (invSize <= 0 || invSize % 9 != 0)
+                invSize++;
+            invSize--;
+        }
+        else
+        {
+            invSize = 53;
+        }
+
+        while(count > 0) {
+            if(count%invSize == 0)
                 maxPages++;
             count--;
         }
@@ -131,7 +144,7 @@ public class Category {
     private void setupData()
     {
         ItemMeta meta = icon.getItemMeta();
-        meta.setLocalizedName("MCPetsCategory;" + this.getId());
+        meta.setItemName("MCPetsCategory;" + this.getId());
         meta.setDisplayName(iconName);
 
         icon.setItemMeta(meta);
@@ -152,9 +165,9 @@ public class Category {
         if(pager != null
                 && !pager.getType().isAir()
                 && pager.hasItemMeta()
-                && pager.getItemMeta().hasLocalizedName())
+                && pager.getItemMeta().hasItemName())
         {
-            String[] data = pager.getItemMeta().getLocalizedName().split(";");
+            String[] data = pager.getItemMeta().getItemName().split(";");
             if(data.length != 3)
                 return -1;
 
@@ -230,9 +243,9 @@ public class Category {
         if(pager != null
                 && !pager.getType().isAir()
                 && pager.hasItemMeta()
-                && pager.getItemMeta().hasLocalizedName())
+                && pager.getItemMeta().hasItemName())
         {
-            String[] data = pager.getItemMeta().getLocalizedName().split(";");
+            String[] data = pager.getItemMeta().getItemName().split(";");
             if(data.length != 3)
                 return null;
 

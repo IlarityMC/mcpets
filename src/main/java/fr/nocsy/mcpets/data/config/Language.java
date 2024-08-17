@@ -79,17 +79,14 @@ public enum Language {
 
     REQUIRES_MODELENGINE("§cThis plugin requires ModelEngine r2.3.1. It seems that this requirement is not satisfied."),
 
-    USAGE("§cThis command doesn't exist. \n§7Check out the wiki: §nhttps://alexandre-chaussard.gitbook.io/mcpets/tutorials/plugin-features/commands"),
+    USAGE("§cThis command doesn't exist. \n§7Check out the wiki: §nhttps://mcpets.gitbook.io/mcpets/tutorials/plugin-features/commands"),
     NO_PERM("§cYou're not allowed to use this command."),
     BLACKLISTED_WORLD("§cMCPets is disabled in this world."),
 
     CATEGORY_MENU_TITLE("§0☀ §4Pets §8- Pick a category §0☀"),
     CATEGORY_DOESNT_EXIST("§cThis category does not exist."),
 
-    PET_INVENTORY_TITLE_1("§0☀ §4%pet% §8- §0Inventory §0☀§"),
-    PET_INVENTORY_TITLE_2("§0☀ §4%pet% §8- §0Inventory §0☀§"),
-    PET_INVENTORY_TITLE_3("§0☀ §4%pet% §8- §0Inventory §0☀§"),
-    PET_INVENTORY_TITLE_4("§0☀ §4%pet% §8- §0Inventory §0☀§"),
+    PET_INVENTORY_TITLE("§0☀ §4%pet% §8- §0Inventory §0☀§"),
 
     PET_INVENTORY_COULDNOT_OPEN("§cThis inventory can not be opened as it may not exist."),
 
@@ -134,14 +131,10 @@ public enum Language {
             "\n§7Experience: §a%experience%/%threshold% xp" +
             "\n%progressbar%"),
 
+    PET_STATS_EVOLUTION_ALREADY_OWNED("§cEvolution already owned."),
+    PET_STATS_MAX_LEVEL("§7Maximum level reached."),
     DEBUGGER_JOINING("§aDebugger is enabled. You are now listening to it."),
-    DEBUGGER_LEAVE("§aDebugger is §7disabled§a. You will not be listening to it anymore."),
-
-    PET_UPGRADED("§aYour pet has been upgraded!"),
-    PET_MAX_LEVEL("§cYour pet is already at max level!"),
-    NOT_ENOUGH_MONEY("§cYou don't have enough money to upgrade your pet!"),
-    PET_STATUS_UPGRADE("§7Click to upgrade!"),
-    PET_STATUS_NOT_ENOUGH_MONEY("§cYou don't have enough money!");
+    DEBUGGER_LEAVE("§aDebugger is §7disabled§a. You will not be listening to it anymore.");
 
     private String message;
 
@@ -172,7 +165,6 @@ public enum Language {
     }
 
     public void sendMessage(Player p) {
-        message = Utils.hex(message);
         if(message.isEmpty())
             return;
         p.sendMessage(Utils.hex(GlobalConfig.getInstance().getPrefix() + getMessagePAPI(p)));
@@ -181,7 +173,6 @@ public enum Language {
     public void sendMessage(CommandSender sender) {
         if(message.isEmpty())
             return;
-        message = Utils.hex(message);
         sender.sendMessage(Utils.hex(GlobalConfig.getInstance().getPrefix() + getMessage()));
     }
 
@@ -192,7 +183,6 @@ public enum Language {
         for (FormatArg arg : args) {
             toSend = arg.applyToString(toSend);
         }
-        toSend = Utils.hex(toSend);
         sender.sendMessage(Utils.hex(GlobalConfig.getInstance().getPrefix() + toSend));
     }
 
@@ -201,7 +191,6 @@ public enum Language {
         for (FormatArg arg : args) {
             toSend = arg.applyToString(toSend);
         }
-        toSend = Utils.hex(toSend);
         return toSend;
     }
 
